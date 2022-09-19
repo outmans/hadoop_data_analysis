@@ -1,0 +1,32 @@
+<assembly>
+    <id>package</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources/script</directory>
+            <outputDirectory>${file.separator}script</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/lib</directory>
+            <outputDirectory>${file.separator}lib</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>application*.yml</include>
+            </includes>
+            <outputDirectory>${file.separator}config</outputDirectory>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>${project.build.directory}${file.separator}${build.finalName}.jar</source>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <destName>${build.finalName}.jar</destName>
+        </file>
+    </files>
+</assembly>

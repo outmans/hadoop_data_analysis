@@ -12,9 +12,9 @@ import java.util.Collections;
  */
 public class CodeGenerator {
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/test01?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true", "root", "123456")
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/hadoop?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true", "root", "123456")
                 .globalConfig(builder -> {
-                    builder.author("itranlin") // 设置作者
+                    builder.author("jack") // 设置作者
                             .enableSwagger() // 开启 swagger 模式
                             .fileOverride() // 覆盖已生成文件
                             .disableOpenDir()

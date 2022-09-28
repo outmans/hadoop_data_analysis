@@ -1,0 +1,136 @@
+{
+	"info": {
+		"_postman_id": "90a31ffb-5e0d-4268-9c80-2250ebe6a201",
+		"name": "spark",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "生成数据接口",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "eyJUeXBlIjoiSnd0IiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6IjEiLCJleHAiOjE2NjQ0NjMzMjYsInVzZXJuYW1lIjoiYWRtaW4ifQ.0GF5IYAz93lddLDw7vQiRVK2k344WoD_7DwQYoR6xdQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"测试任务\",\n    \"num\": \"1000\",\n    \"systemPercent\": \"30;30;30;10\",\n    \"simPercent\": \"30;70\",\n    \"brand\":\"1;2;3\",\n    \"model\":\"4;5;6\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/spark/generateData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"spark",
+						"generateData"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "分页查询数据生成记录",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "eyJUeXBlIjoiSnd0IiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6IjEiLCJleHAiOjE2NjQ0NjMzMjYsInVzZXJuYW1lIjoiYWRtaW4ifQ.0GF5IYAz93lddLDw7vQiRVK2k344WoD_7DwQYoR6xdQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "start",
+							"value": "1",
+							"type": "default"
+						},
+						{
+							"key": "end",
+							"value": "2",
+							"type": "default"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/spark/getLogData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"spark",
+						"getLogData"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "登录接口",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"admin\",\"password\":\"123456\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/account/sign-in",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"account",
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -4,7 +4,6 @@ import com.itranlin.basic.admin.dto.Spark.*;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -17,6 +16,9 @@ public interface paramMapper {
 
     @Select("select brand from brand")
     List<BrandDTO> selectBrand();
+
+    @Select("select shop_name from shop")
+    List<ShopNameDTO> selectShopName();
 
     @Select("select camera from camera")
     List<CameraDTO> selectCamera();

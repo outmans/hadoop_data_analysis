@@ -21,7 +21,7 @@ public class SparkController {
 
     @PostMapping("/generateData")
     @ApiOperation("随机生成数据")
-    public RequestResult<Void> generateData(@RequestBody GenerateDTO generateDTO) throws IOException {
+    public RequestResult<Void> generateData(@RequestBody GenerateDTO generateDTO) throws IOException, InterruptedException {
         sparkService.randomAll(generateDTO);
         return RequestResult.e(StatusEnum.OK);
     }

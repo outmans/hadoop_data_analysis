@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ISparkService {
 
-    void randomAll(GenerateDTO generateDTO) throws IOException;
+    void randomAll(GenerateDTO generateDTO) throws IOException, InterruptedException;
 
     List<GenerateLogVO> getLogData(int start,int end);
 }

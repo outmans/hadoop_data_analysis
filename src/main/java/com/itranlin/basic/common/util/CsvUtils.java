@@ -13,16 +13,17 @@ public class CsvUtils {
      * 导出csv文件
      * @param titles   导出文件列头
      * @param list     具体导出数据
-     * @param fileName 文件名称
-     * @param exportPath 文件输出路径
+     * @param filePath 文件输出路径
      */
-    public static void exportCsv(List<String> titles, List<Map<String, Object>> list, String fileName, String exportPath) throws IOException, IllegalArgumentException {
+    public static void exportCsv(List<String> titles, List<Map<String, Object>> list, String filePath) throws IOException, IllegalArgumentException {
         StringBuilder expStr = new StringBuilder();
         BufferedWriter csvFileOutputStream = null;
         try {
             //创建文件
-            File csvFile = File.createTempFile(fileName, ".csv", new File(exportPath));
-            csvFileOutputStream = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(csvFile.toPath()), StandardCharsets.UTF_8), 1024);
+            File file = new File(filePath);
+            file.createNewFile();
+//            File csvFile = File.createTempFile(fileName, ".csv", new File(exportPath));
+            csvFileOutputStream = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), 1024);
             //csv文件是逗号分隔，除第一个外，每次写入一个单元格数据后需要输入逗号
             for (String title : titles) {
                 expStr.append(title).append(",");
@@ -43,6 +44,7 @@ public class CsvUtils {
                 expStr.append("\n");
             }
             csvFileOutputStream.write(String.valueOf(expStr));
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -52,6 +54,7 @@ public class CsvUtils {
             }
         }
     }
+
 
 }
 

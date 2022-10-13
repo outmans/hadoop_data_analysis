@@ -1,7 +1,7 @@
 package com.itranlin.basic.admin.controller;
 
 import com.itranlin.basic.common.handler.BaseContextHandler;
-import com.itranlin.basic.common.util.RedisUtil;
+//import com.itranlin.basic.common.util.RedisUtil;
 import com.itranlin.basic.common.bean.RequestResult;
 import com.itranlin.basic.common.bean.StatusEnum;
 import com.itranlin.basic.admin.dto.account.PwdDTO;
@@ -38,7 +38,7 @@ public class AccountController {
     @GetMapping(value = "/logout")
     @ApiOperation(value = "注销登录")
     public RequestResult<Void> logout() {
-        RedisUtil.del(BaseContextHandler.getToken());
+//        RedisUtil.del(BaseContextHandler.getToken());
         return RequestResult.e(StatusEnum.LOGOUT_OK);
     }
 

@@ -1,6 +1,7 @@
 package com.itranlin.basic.admin.mapper;
 
 import com.itranlin.basic.admin.dto.Spark.*;
+import com.itranlin.basic.admin.vo.hadoop.GenerateLogDetailVO;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,8 +40,11 @@ public interface paramMapper {
     List<WirelessDTO> selectWireless();
 
     @Insert("insert into generate_record(name,num,status,system_percent,sim_percent,brand,model,operate_time) values(#{name},#{num},#{status},#{systemPercent},#{simPercent},#{brand},#{model},#{operateTime,jdbcType=DATE})")
-    void addGenerateLog(GenerateLogVO generateVO);
+    void addGenerateLog(GenerateLogDTO generateDTO);
 
-    @Select("select * from generate_record limit #{start},#{end}")
-    List<GenerateLogVO> getLogData(int start, int end);
+    @Select("select id,name,num,status,operate_time from generate_record")
+    List<GenerateLogVO> getLogData();
+
+    @Select("select system_percent,sim_percent,brand,model from generate_record where id=#{num}")
+    List<GenerateLogDetailVO> getLogDataDetail(int num);
 }

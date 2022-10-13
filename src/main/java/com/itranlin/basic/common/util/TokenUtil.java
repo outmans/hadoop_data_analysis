@@ -43,7 +43,7 @@ public class TokenUtil {
                 .withClaim("role", user.getType())
                 .withExpiresAt(date)
                 .sign(algorithm);
-        RedisUtil.set(token, "Authorization", 60 * 60 * 24);
+//        RedisUtil.set(token, "Authorization", 60 * 60 * 24);
         return token;
     }
 
@@ -54,9 +54,9 @@ public class TokenUtil {
      * @return token是否通过
      */
     public static boolean verify(String token) {
-        if (null == RedisUtil.get(token)) {
-            return false;
-        }
+//        if (null == RedisUtil.get(token)) {
+//            return false;
+//        }
         Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
         JWTVerifier verifier = JWT.require(algorithm).build();
         verifier.verify(token);

@@ -2,8 +2,8 @@ package com.itranlin.basic.admin.service.impl;
 
 import com.itranlin.basic.admin.dto.Spark.*;
 import com.itranlin.basic.admin.mapper.paramMapper;
-import com.itranlin.basic.admin.service.DataProcess;
 import com.itranlin.basic.admin.service.ISparkService;
+import com.itranlin.basic.admin.vo.hadoop.GenerateLogDetailVO;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
 import com.itranlin.basic.common.util.CsvUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -237,28 +237,28 @@ public class SparkServiceImpl implements ISparkService {
         List<String> title = Arrays.asList("brand", "phoneModel", "shopName", "comment", "camera", "cpuModel", "rate", "battery", "wireless", "power", "system", "weight", "inch", "5G", "sim", "launchDate");
         String filePath = "/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/data" + "/" + generateDTO.getName() + ".csv";
         CsvUtils.exportCsv(title, dataList, filePath);
-        test();
-        uploadFileToHDFS(filePath, generateDTO.getName()+".csv");
+//        test();
+//        uploadFileToHDFS(filePath, generateDTO.getName()+".csv");
         //每次生成数据时需要记录到数据库
-        GenerateLogVO generateLogVO = new GenerateLogVO();
-        generateLogVO.setName(generateDTO.getName());
-        generateLogVO.setNum(generateDTO.getNum());
-        generateLogVO.setStatus("0");
-        generateLogVO.setSystemPercent(generateDTO.getSystemPercent());
-        generateLogVO.setSimPercent(generateDTO.getSimPercent());
-        generateLogVO.setBrand(generateDTO.getBrand());
-        generateLogVO.setModel(generateDTO.getModel());
-        generateLogVO.setOperateTime(new Date());
-        paramMapper.addGenerateLog(generateLogVO);
+        GenerateLogDTO generateLogDTO = new GenerateLogDTO();
+        generateLogDTO.setName(generateDTO.getName());
+        generateLogDTO.setNum(generateDTO.getNum());
+        generateLogDTO.setStatus("0");
+        generateLogDTO.setSystemPercent(generateDTO.getSystemPercent());
+        generateLogDTO.setSimPercent(generateDTO.getSimPercent());
+        generateLogDTO.setBrand(generateDTO.getBrand());
+        generateLogDTO.setModel(generateDTO.getModel());
+        generateLogDTO.setOperateTime(new Date());
+        paramMapper.addGenerateLog(generateLogDTO);
         System.out.println("随机生成数据记录到数据库完成！");
         //每0.1秒去hdfs查看文件是否存在，如果循环100次不存在则跳过下载
-        for (int i = 0;i<100;i++){
-            Thread.sleep(100);//停顿0.1秒
-            if (isHDFSPathExist("/spark/"+generateDTO.getName()+".csv")){
-                hdfsDownload("/spark/"+generateDTO.getName()+".csv");
-                break;
-            }
-        }
+//        for (int i = 0;i<100;i++){
+//            Thread.sleep(100);//停顿0.1秒
+//            if (isHDFSPathExist("/spark/"+generateDTO.getName()+".csv")){
+//                hdfsDownload("/spark/"+generateDTO.getName()+".csv");
+//                break;
+//            }
+//        }
 
 //        File file = new File("/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/mapper/" + generateDTO.getName() + ".csv");
 //        DataProcess dataProcess = new DataProcess();
@@ -310,8 +310,12 @@ public class SparkServiceImpl implements ISparkService {
     }
 
     @Override
-    public List<GenerateLogVO> getLogData(int start, int end) {
-        return paramMapper.getLogData(start, end);
+    public List<GenerateLogVO> getLogData() {
+        return paramMapper.getLogData();
     }
 
+    @Override
+    public List<GenerateLogDetailVO> getLogDataDetail(int num) {
+        return paramMapper.getLogDataDetail(num);
+    }
 }

@@ -1,20 +1,17 @@
-package com.itranlin.basic.admin.dto.Spark;
+package com.itranlin.basic.admin.vo.hadoop;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class GenerateDTO implements Serializable {
-    private static final long serialVersionUID = -1242493306307174690L;
-    @ApiModelProperty("任务名称")
-    private String name;
-    @ApiModelProperty("生成数量")
-    private int num;
+@ApiModel(value = "生成数据记录详情")
+public class GenerateLogDetailVO implements Serializable {
     @ApiModelProperty("系统；30;30;30;10； 安卓；ios；鸿蒙；功能机；")
     private String systemPercent;
-    @ApiModelProperty("Sim卡数量；30;30;40； 1个；2个；3个；")
+    @ApiModelProperty("Sim卡数量；30;70； 1个；2个")
     private String simPercent;
     @ApiModelProperty("品牌")
     private String brand;

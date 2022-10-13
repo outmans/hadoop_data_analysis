@@ -1,4 +1,4 @@
-package com.itranlin.basic.admin.service
+package com.itranlin.basic.admin.service.impl
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}

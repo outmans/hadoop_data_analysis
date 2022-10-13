@@ -1,6 +1,7 @@
 package com.itranlin.basic.admin.service;
 
 import com.itranlin.basic.admin.dto.Spark.GenerateDTO;
+import com.itranlin.basic.admin.vo.hadoop.GenerateLogDetailVO;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
 
 import java.io.IOException;
@@ -10,5 +11,7 @@ public interface ISparkService {
 
     void randomAll(GenerateDTO generateDTO) throws IOException, InterruptedException;
 
-    List<GenerateLogVO> getLogData(int start,int end);
+    List<GenerateLogVO> getLogData();
+
+    List<GenerateLogDetailVO> getLogDataDetail(int num);
 }

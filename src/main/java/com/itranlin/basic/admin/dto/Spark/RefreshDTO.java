@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class RefreshDTO {
-    private String refreshRate;
+    private Integer refreshRate;
 }

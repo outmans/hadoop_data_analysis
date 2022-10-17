@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class BatteryDTO {
-    private String battery;
+    private Integer battery;
 }

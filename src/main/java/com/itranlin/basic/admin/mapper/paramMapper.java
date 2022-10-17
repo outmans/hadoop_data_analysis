@@ -3,9 +3,7 @@ package com.itranlin.basic.admin.mapper;
 import com.itranlin.basic.admin.dto.Spark.*;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogDetailVO;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -39,12 +37,16 @@ public interface paramMapper {
     @Select("select wirelessCharging from wirelessCharging")
     List<WirelessDTO> selectWireless();
 
-    @Insert("insert into generate_record(name,num,status,system_percent,sim_percent,brand,model,operate_time) values(#{name},#{num},#{status},#{systemPercent},#{simPercent},#{brand},#{model},#{operateTime,jdbcType=DATE})")
-    void addGenerateLog(GenerateLogDTO generateDTO);
+    @Insert("insert into generate_record(name,num,status,system_percent,sim_percent,brand,model,operator,operate_time) values(#{name},#{num},#{status},#{systemPercent},#{simPercent},#{brand},#{model},#{operator},#{operateTime,jdbcType=DATE})")
+    @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="id")
+    int addGenerateLog(GenerateLogDTO generateDTO);
 
-    @Select("select id,name,num,status,operate_time from generate_record")
+    @Select("select id,name,num,status,operator,operate_time from generate_record")
     List<GenerateLogVO> getLogData();
 
     @Select("select system_percent,sim_percent,brand,model from generate_record where id=#{num}")
-    List<GenerateLogDetailVO> getLogDataDetail(int num);
+    GenerateLogDetailVO getLogDataDetail(int num);
+
+    @Update("UPDATE generate_record SET status = '1' WHERE id = #{id}")
+    void updateStatus(int id);
 }

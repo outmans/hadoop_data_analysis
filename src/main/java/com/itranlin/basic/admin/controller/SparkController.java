@@ -36,7 +36,7 @@ public class SparkController {
 
     @GetMapping("/getLogDataDetail")
     @ApiOperation("获取数据生成记录详情")
-    public RequestResult<List<GenerateLogDetailVO>> getLogDataDetail(int id) {
+    public RequestResult<GenerateLogDetailVO> getLogDataDetail(int id) {
         return RequestResult.e(StatusEnum.OK,sparkService.getLogDataDetail(id));
     }
 }

@@ -16,11 +16,14 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
         username: root
         password: 123456
+#        url: jdbc:mysql://10.6.93.100:3306/hadoop?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true
         url: jdbc:mysql://localhost:3306/hadoop?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true
     redis:
-        host: itranlin.com
+#        host: itranlin.com
+        host: XX
         port: 6379
-        password: chen.he321231
+#        password: chen.he321231
+        password: XXX
         timeout: 10000
         jedis:
             pool:

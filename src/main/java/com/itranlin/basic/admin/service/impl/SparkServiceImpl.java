@@ -1,5 +1,6 @@
 package com.itranlin.basic.admin.service.impl;
 
+import SparkCul.DataProcess;
 import com.itranlin.basic.admin.dto.Spark.*;
 import com.itranlin.basic.admin.mapper.paramMapper;
 import com.itranlin.basic.admin.service.ISparkService;
@@ -7,6 +8,7 @@ import com.itranlin.basic.admin.vo.hadoop.GenerateLogDetailVO;
 import com.itranlin.basic.admin.vo.hadoop.GenerateLogVO;
 import com.itranlin.basic.common.util.CsvUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.*;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -21,7 +24,6 @@ public class SparkServiceImpl implements ISparkService {
 
     @Resource
     private paramMapper paramMapper;
-
 
     @Override
     public void randomAll(GenerateDTO generateDTO) throws IOException, InterruptedException {
@@ -104,7 +106,7 @@ public class SparkServiceImpl implements ISparkService {
         //sim卡字段数据如果不是0则解析数据
         int onePercent = 0;
         int twoPercent = 0;
-        List<String> simList = new ArrayList<>(Arrays.asList("1", "2"));
+        List<String> simList = new ArrayList<>(Arrays.asList("单卡", "双卡"));
         if (!sim.equals("0")) {
             String[] split = sim.split(";");
             onePercent = (Integer.parseInt(split[0]) * totalNum) / 100;
@@ -117,7 +119,11 @@ public class SparkServiceImpl implements ISparkService {
         Random ran = new Random();
         //随机生成的List
         List<Map<String, Object>> dataList = new ArrayList<>();
-
+        //文件写入次数，第一次写入flag+1，写入数据和title，之后判断不是0的话只写入数据不写入title
+        int flag = 0;
+        //生成csv文件
+        List<String> title = Arrays.asList("brand", "phoneModel", "shopName", "comment", "camera", "cpuModel", "rate", "battery", "wireless", "power", "system", "weight", "inch", "5G", "sim", "launchDate");
+        String tmpFilePath = "/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/data" + "/" + generateDTO.getName() + ".csv";
         while (sum <= totalNum) {
             //如果要打印数据到控制台会拖慢数据生成速度，因为sout是同步的
             //System.out.println("正在生成随机数据第" + sum + "条");
@@ -199,10 +205,10 @@ public class SparkServiceImpl implements ISparkService {
             //随机生成sim卡
             if (!system.equals("0")) {
                 if (sum <= onePercent) {
-                    dataMap.put("sim", "1");
+                    dataMap.put("sim", "单卡");
                 }
                 if (sum <= twoPercent && sum > onePercent) {
-                    dataMap.put("sim", "2");
+                    dataMap.put("sim", "双卡");
                 }
             } else {
                 int ranSim = ran.nextInt(simNum);
@@ -227,18 +233,33 @@ public class SparkServiceImpl implements ISparkService {
                     day = ran.nextInt(28) + 1;
                 }
             }
-            String launchDate = year + "-" + month + "-" + day;
+            String newMonth = String.valueOf(month);
+            String newDay = String.valueOf(day);
+            if (month < 10) {
+                newMonth = "0" + month;
+            }
+            if (day < 10) {
+                newDay = "0" + day;
+            }
+            String launchDate = year + "-" + newMonth + "-" + newDay;
             dataMap.put("launchDate", launchDate);
-            //把数据放到list内
+            //把数据放到list内,每5000条写入一次数据
             dataList.add(dataMap);
+            if (flag == 0 && sum % 5000 == 0) {
+                CsvUtils.exportCsv(title, dataList, tmpFilePath);
+                flag++;
+                dataList.clear();
+            } else if (flag != 0 && sum % 5000 == 0) {
+                CsvUtils.updateCsv(dataList, tmpFilePath);
+                dataList.clear();
+            }
             sum++;
         }
-        //生成csv文件
-        List<String> title = Arrays.asList("brand", "phoneModel", "shopName", "comment", "camera", "cpuModel", "rate", "battery", "wireless", "power", "system", "weight", "inch", "5G", "sim", "launchDate");
-        String filePath = "/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/data" + "/" + generateDTO.getName() + ".csv";
-        CsvUtils.exportCsv(title, dataList, filePath);
-//        test();
-//        uploadFileToHDFS(filePath, generateDTO.getName()+".csv");
+        if (dataList.size() > 0) {
+            CsvUtils.updateCsv(dataList, tmpFilePath);
+        }
+//        String tmpFilePath = "/usr/local/flume/tmp/task.csv";
+
         //每次生成数据时需要记录到数据库
         GenerateLogDTO generateLogDTO = new GenerateLogDTO();
         generateLogDTO.setName(generateDTO.getName());
@@ -248,37 +269,45 @@ public class SparkServiceImpl implements ISparkService {
         generateLogDTO.setSimPercent(generateDTO.getSimPercent());
         generateLogDTO.setBrand(generateDTO.getBrand());
         generateLogDTO.setModel(generateDTO.getModel());
-        generateLogDTO.setOperateTime(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date d = new Date();
+        generateLogDTO.setOperator("admin");
+        generateLogDTO.setOperateTime(sdf.format(d));
         paramMapper.addGenerateLog(generateLogDTO);
+//        test();
+//        uploadFileToHDFS(filePath, "task"+generateDTO.getId()+".csv");
         System.out.println("随机生成数据记录到数据库完成！");
+        DataProcess dataProcess = new DataProcess();
+        dataProcess.compute(tmpFilePath, String.valueOf(generateLogDTO.getId()));
+
         //每0.1秒去hdfs查看文件是否存在，如果循环100次不存在则跳过下载
 //        for (int i = 0;i<100;i++){
 //            Thread.sleep(100);//停顿0.1秒
-//            if (isHDFSPathExist("/spark/"+generateDTO.getName()+".csv")){
-//                hdfsDownload("/spark/"+generateDTO.getName()+".csv");
+//            if (isHDFSPathExist("/flume/work")){
+//                hdfsDownload("/flume/work");
 //                break;
 //            }
 //        }
-
-//        File file = new File("/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/mapper/" + generateDTO.getName() + ".csv");
-//        DataProcess dataProcess = new DataProcess();
+//
+//        //查看下载下来的文件是否存在，存在再进行计算
+//        File file = new File("/usr/local/flume/downloadFile/task.csv");
 //        for (int i = 0;i<100;i++){
 //            Thread.sleep(100);//停顿0.1秒
 //            if (file.exists()){
-//                dataProcess.compute("/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/mapper/"+generateDTO.getName()+".csv");
+//                dataProcess.compute("/usr/local/flume/downloadFile/task.csv", String.valueOf(generateLogDTO.getId()));
 //                break;
 //            }
 //        }
-
+        paramMapper.updateStatus(generateLogDTO.getId());
     }
 
 
-    public static void uploadFileToHDFS(String filePath,String fileName) throws IOException {
+    public static void uploadFileToHDFS(String filePath, String fileName) throws IOException {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://10.7.120.133:9000");
         FileSystem fs = FileSystem.get(conf);
         Path src = new Path(filePath);
-        Path dest = new Path("/spark/"+fileName);
+        Path dest = new Path("/flume/work/" + fileName);
         fs.copyFromLocalFile(src, dest);
         System.out.println("上传成功");
     }
@@ -292,21 +321,28 @@ public class SparkServiceImpl implements ISparkService {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://10.7.120.133:9000");
         FileSystem fs = FileSystem.newInstance(conf);
-        fs.copyToLocalFile(new Path(path), new Path("/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/mapper"));
-        System.out.println("hadoop文件下载成功");
+        Path p = new Path(path);
+        FileStatus[] stats = fs.listStatus(p);
+        String filePath = stats[0].getPath().toString();
+        String fileName = stats[0].getPath().getName();
+        String[] split = fileName.split("\\.");
+        String realName = split[0] + "." + split[1];
+        System.out.println(realName);
+        fs.copyToLocalFile(new Path(filePath), new Path("/Users/jackzhang/IdeaProjects/HadoopServer/src/main/resources/mapper/" + realName));
+        System.out.println("hdfs文件下载到本地成功");
+        fs.delete(new Path("/flume/work/" + fileName), true);
+        System.out.println("hdfs文件删除成功");
     }
+
 
     public static boolean isHDFSPathExist(String path) throws IOException {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://10.7.120.133:9000");
-        conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
-        try(FileSystem fs = FileSystem.get(conf)) {
-            if (fs.exists(new Path(path))) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+//        conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+        FileSystem fs = FileSystem.newInstance(conf);
+        Path p = new Path(path);
+        FileStatus[] stats = fs.listStatus(p);
+        return stats.length != 0;
     }
 
     @Override
@@ -315,7 +351,7 @@ public class SparkServiceImpl implements ISparkService {
     }
 
     @Override
-    public List<GenerateLogDetailVO> getLogDataDetail(int num) {
+    public GenerateLogDetailVO getLogDataDetail(int num) {
         return paramMapper.getLogDataDetail(num);
     }
 }

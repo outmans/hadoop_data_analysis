@@ -13,5 +13,5 @@ public interface ISparkService {
 
     List<GenerateLogVO> getLogData();
 
-    List<GenerateLogDetailVO> getLogDataDetail(int num);
+    GenerateLogDetailVO getLogDataDetail(int num);
 }

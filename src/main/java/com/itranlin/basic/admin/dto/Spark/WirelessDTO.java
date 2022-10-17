@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class WirelessDTO {
-    private String wirelessCharging;
+    private Integer wirelessCharging;
 }

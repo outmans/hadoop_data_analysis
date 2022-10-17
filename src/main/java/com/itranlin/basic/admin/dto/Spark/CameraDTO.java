@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class CameraDTO {
-    private String camera;
+    private Integer camera;
 }
